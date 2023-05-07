@@ -18,8 +18,9 @@ cloudinary.config({
   secure: true,
 });
 
-// *** Fonction qui permet de transformer nos fichier qu'on reçois
-// *** sous forme de Buffer en base64 afin de pouvoir les upload sur cloudinary
+// DECLARE FUNCTION
+// to transform the picture file received as a 'buffer' into a base64,
+// to then be able to upload to cloudinary
 const convertToBase64 = (file) => {
   return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
 };
@@ -129,7 +130,7 @@ router.get("/offers", async (req, res) => {
   }
 });
 
-// ROUTE 4 - RETURNS OFFER, USING ID PROVIDED IN PARAMS
+// ROUTE 4 - RETURNS SPECIFIC OFFER
 router.get("/offer/:id", async (req, res) => {
   try {
     const offerById = await Offer.findById(req.params.id).populate(

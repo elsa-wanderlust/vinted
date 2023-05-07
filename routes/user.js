@@ -3,16 +3,27 @@ const uid2 = require("uid2");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
 const router = express.Router();
+const fileUpload = require("express-fileupload");
+const cloudinary = require("cloudinary").v2;
 
 // IMPORT THE MODELS
-const User = require("../model/User.js");
+const Offer = require("../model/Offer");
+const User = require("../model/User");
 
-// SIGN UP
-router.post("/user/signup", async (req, res) => {
+// DECLARE FUNCTION
+// to transform the picture file received as a 'buffer' into a base64,
+// to then be able to upload to cloudinary
+const convertToBase64 = (file) => {
+  return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
+};
+
+// ROUTE 1 - SIGN UP
+router.post("/user/signup", fileUpload(), async (req, res) => {
   try {
     const { username, email, password, newsletter } = req.body;
     const userAlreadyExisted = await User.findOne({ email: email });
-    if (!username || !email || !password || typeof newsletter !== "boolean") {
+    if (!username || !email || !password) {
+      // if (!username || !email || !password || typeof newsletter !== "boolean") {
       return res.status(400).json({ message: "missing parameter" });
     }
     if (userAlreadyExisted !== null) {
@@ -31,6 +42,13 @@ router.post("/user/signup", async (req, res) => {
       hash,
       salt,
     });
+
+    const imageUploaded = await cloudinary.uploader.upload(
+      convertToBase64(req.files.picture),
+      { folder: `/vinted/users/${newUser._id}` }
+    );
+    newUser.account.avatar = imageUploaded;
+
     await newUser.save();
     res.status(201).json({
       _id: newUser._id,
@@ -42,7 +60,7 @@ router.post("/user/signup", async (req, res) => {
   }
 });
 
-// LOG IN
+// ROUTE 2 - LOG IN
 router.post("/user/login", async (req, res) => {
   try {
     const { email, password } = req.body;
