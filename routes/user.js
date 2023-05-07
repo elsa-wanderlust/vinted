@@ -13,7 +13,7 @@ router.post("/user/signup", async (req, res) => {
     const { username, email, password, newsletter } = req.body;
     const userAlreadyExisted = await User.findOne({ email: email });
     if (!username || !email || !password || typeof newsletter !== "boolean") {
-      return res.status(400).json({ message: "missing parameter(s)" });
+      return res.status(400).json({ message: "missing parameter" });
     }
     if (userAlreadyExisted !== null) {
       return res.status(409).json({

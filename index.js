@@ -1,5 +1,5 @@
-const express = require("express");
-const mongoose = require("mongoose");
+const express = require("express"); // pkg to be create a server
+const mongoose = require("mongoose"); // to connect to the DB
 const app = express(); // declare the server
 app.use(express.json()); // can read the parameters in body
 require("dotenv").config();

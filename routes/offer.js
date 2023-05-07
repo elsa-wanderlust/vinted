@@ -106,7 +106,7 @@ router.get("/offers", async (req, res) => {
       priceMin = 0,
       priceMax = 100000,
       page = 1,
-      articlesPerPage = 2,
+      articlesPerPage = 5,
       sort = "price-asc",
     } = req.query;
     skip = articlesPerPage * (page - 1);
@@ -123,7 +123,7 @@ router.get("/offers", async (req, res) => {
       .limit(articlesPerPage)
       .populate("owner", "account");
     const count = await Offer.countDocuments(filters);
-    res.status(200).json({ count: count, offre: offers });
+    res.status(200).json({ count: count, offers: offers });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
