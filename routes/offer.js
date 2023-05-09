@@ -151,6 +151,7 @@ router.post("/payment", isAuthenticated, async (req, res) => {
 
     const offerById = await Offer.findById(productId);
     console.log(offerById);
+
     // if (responseFromStripe.status === succeeded) {
     //   const offerToModify = await Offer.findByIdAndUpdate(productId, {
     //     product_availability: false,
