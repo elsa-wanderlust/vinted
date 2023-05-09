@@ -20,6 +20,7 @@ const convertToBase64 = (file) => {
 // ROUTE 1 - SIGN UP
 router.post("/user/signup", fileUpload(), async (req, res) => {
   try {
+    // *** destructuring the parameters received in postman - no need for the images
     const { username, email, password, newsletter } = req.body;
     const userAlreadyExisted = await User.findOne({ email: email });
     if (!username || !email || !password) {
@@ -44,7 +45,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
     });
 
     const imageUploaded = await cloudinary.uploader.upload(
-      convertToBase64(req.files.picture),
+      convertToBase64(req.files.avatar),
       { folder: `/vinted/users/${newUser._id}` }
     );
     newUser.account.avatar = imageUploaded;

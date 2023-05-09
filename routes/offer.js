@@ -1,6 +1,9 @@
 const express = require("express");
 const cloudinary = require("cloudinary").v2;
 const mongoose = require("mongoose");
+//  needed because by default express cant receive files as body,
+// so we'll need a middleware: fileUpload. Then:
+// req.body to get the text input and req.file for the file(s)
 const fileUpload = require("express-fileupload");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const router = express.Router();
@@ -32,23 +35,11 @@ router.post(
   fileUpload(),
   async (req, res) => {
     try {
-      // *** IDENTIFY USER USING THE TOKEN
-      // console.log(req.headers.authorization);
-      // DELETE const token = req.headers.authorization.replace("Bearer ", "");
-      // console.log(token);
-      // DELETE const user = await User.findOne({ token }).select("-hash -salt"); // ELSA TO REDO
-      // *** returns the body parameters EXCEPT the FILE
-      // console.log(req.body);
-      // ***returns the file, not under the format wanted
-      // *** so we transform req.files into a String using the provided function that uses the mimetype
-      // *** but also the data (the Buffer)
-      // console.log(req.files);
-
       // ***  CREATE NEW OFFER WITHOUT IMAGE
-      // *** destructuring the parameters received in postman - no need for the image
+      // *** destructuring the parameters received in postman - no need for the images
       const { title, description, price, condition, city, brand, size, color } =
         req.body;
-      // console.log("req body : ", req.body)
+
       const newOffer = new Offer({
         product_name: title,
         product_description: description,
@@ -63,13 +54,15 @@ router.post(
         owner: req.user, // req.user because it's defined in of the isAuthenticated function, and we've decided to only return the account info
         // and not the salt nor the hash
       });
+
       const imageUploaded = await cloudinary.uploader.upload(
         convertToBase64(req.files.picture),
         { folder: `/vinted/offers/${newOffer._id}` }
       );
-      // console.log(imageUploaded);
+
       newOffer.product_image = imageUploaded;
       await newOffer.save();
+      console.log(newOffer);
       res.status(200).json(newOffer);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -80,11 +73,6 @@ router.post(
 // ROUTE 2 - MODIFY AN OFFER - ELSA but how to modify an image?
 router.put("/offer/update", isAuthenticated, async (req, res) => {
   try {
-    // console.log(req.body);
-    // const idToUpdate = req.body._id;
-    // delete req.body.id;
-    // console.log(req.body);
-    // console.log(idToUpdate);
     const offerToModify = await Offer.findByIdAndUpdate(
       req.body._id,
       req.body,
