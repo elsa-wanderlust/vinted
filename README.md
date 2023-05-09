@@ -16,24 +16,29 @@ there are 2 categories of routes:
 - PUBLISH A NEW OFFER  
    "/offer/publish"  
    as post  
-   parameters as XXX
-  uses a middle 'isAuthenticated'  
+   parameters as BODY  
+  uses a middleware 'isAuthenticated'  
   &nbsp;
 - MODIFY AN OFFER  
   "/offer/update"  
   as put  
-  parameters as XXX
-  uses a middle 'isAuthenticated'  
+  parameters as BODY  
+  uses a middleware 'isAuthenticated'  
    &nbsp;
 - DISPLAY OFFER, FILTERING AND SORTING  
   "/offers"  
   as get  
-  parameters as XXX  
+  parameters as QUERY  
   &nbsp;
 - RETURNS OFFER, USING ID PROVIDED IN PARAMS  
   "/offer/:id"  
   as get  
-  parameter as params
+  parameter as PARAMS
+- HANDLES PAYMENT
+  "/payment"  
+  as post
+  parameter as BODY  
+  uses a middleware 'isAuthenticated'
 
 ## USER ROUTES:
 

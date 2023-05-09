@@ -41,6 +41,7 @@ router.post(
         req.body;
 
       const newOffer = new Offer({
+        product_availability: true,
         product_name: title,
         product_description: description,
         product_price: Number(price),
@@ -126,6 +127,38 @@ router.get("/offer/:id", async (req, res) => {
       "account"
     );
     res.status(200).json(offerById);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ROUTE 5 - HANDLES PAYMENT
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+router.post("/payment", isAuthenticated, async (req, res) => {
+  try {
+    const { stripeToken, amount, description, productId } = req.body;
+    // STEP 6, 7
+    const responseFromStripe = await stripe.charges.create({
+      amount: amount,
+      currency: "eur",
+      description: description,
+      source: stripeToken,
+    });
+    // STEP 9
+    // console.log(responseFromStripe.status);
+    // console.log(productId);
+
+    const offerById = await Offer.findById(productId);
+    console.log(offerById);
+    // if (responseFromStripe.status === succeeded) {
+    //   const offerToModify = await Offer.findByIdAndUpdate(productId, {
+    //     product_availability: false,
+    //   });
+    //   await offerToModify.save();
+    // }
+    // STEP 8
+    res.status(200).json(responseFromStripe.status);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
