@@ -146,18 +146,13 @@ router.post("/payment", isAuthenticated, async (req, res) => {
       source: stripeToken,
     });
     // STEP 9
-    // console.log(responseFromStripe.status);
-    // console.log(productId);
-
-    const offerById = await Offer.findById(productId);
-    console.log(offerById);
-
-    // if (responseFromStripe.status === succeeded) {
-    //   const offerToModify = await Offer.findByIdAndUpdate(productId, {
-    //     product_availability: false,
-    //   });
-    //   await offerToModify.save();
-    // }
+    if (responseFromStripe.status === "succeeded") {
+      console.log("youpi");
+      const offerToModify = await Offer.findByIdAndUpdate(productId, {
+        product_availability: false,
+      });
+      await offerToModify.save();
+    }
     // STEP 8
     res.status(200).json(responseFromStripe.status);
   } catch (error) {
